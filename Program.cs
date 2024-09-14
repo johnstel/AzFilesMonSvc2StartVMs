@@ -7,6 +7,9 @@ using AzureFileShareMonitorService.Services;
 using AzureFileShareMonitorService.Logging;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Core;
+using System.Collections.Generic;
+using AzureFileShareMonitorService.Models;
+using Microsoft.Extensions.Logging;
 
 namespace AzureFileShareMonitorService
 {
@@ -31,7 +34,7 @@ namespace AzureFileShareMonitorService
                         var credential = new DefaultAzureCredential();
 
                         // Add Azure Key Vault to configuration sources
-                        config.AddAzureKeyVault(keyVaultEndpoint, new KeyVaultSecretManager());
+                        config.AddAzureKeyVault(keyVaultEndpoint, credential, new KeyVaultSecretManager());
                     }
                 })
                 .ConfigureServices((hostContext, services) =>
@@ -48,6 +51,12 @@ namespace AzureFileShareMonitorService
                     services.AddSingleton<IVMManager, VMManager>();
                     services.AddSingleton<IFileShareMonitorService, FileShareMonitorService>();
                     services.AddHostedService<Worker>();
+
+                    // Ensure that the configurations are valid at startup
+                    var serviceProvider = services.BuildServiceProvider();
+
+                    // Validate configurations
+                    ValidateConfigurations(serviceProvider);
                 })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
@@ -57,5 +66,36 @@ namespace AzureFileShareMonitorService
                         options.LogFilePath = hostingContext.Configuration["Logging:LogFilePath"];
                     });
                 });
+
+        private static void ValidateConfigurations(ServiceProvider serviceProvider)
+        {
+            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+            // Validate PollingSettings
+            var pollingSettings = serviceProvider.GetRequiredService<IOptions<PollingSettings>>().Value;
+            if (pollingSettings.IntervalInSeconds < 30)
+            {
+                logger.LogWarning("Polling interval is below 30 seconds. Setting it to 30 seconds.");
+                pollingSettings.IntervalInSeconds = 30;
+            }
+
+            // Validate AzureSettings
+            var azureSettings = serviceProvider.GetRequiredService<IOptions<AzureSettings>>().Value;
+            if (string.IsNullOrEmpty(azureSettings.KeyVaultName))
+            {
+                var message = "Azure Key Vault name must be configured in 'AzureSettings:KeyVaultName'.";
+                logger.LogCritical(message);
+                throw new InvalidOperationException(message);
+            }
+
+            // Validate FolderMappings
+            var folderMappings = serviceProvider.GetRequiredService<IOptions<List<FolderMapping>>>().Value;
+            if (folderMappings == null || !folderMappings.Any())
+            {
+                var message = "At least one folder mapping must be configured in 'FolderMappings'.";
+                logger.LogCritical(message);
+                throw new InvalidOperationException(message);
+            }
+        }
     }
 }
