@@ -2,8 +2,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System;
+using System.Text;
 
 namespace AzureFileShareMonitorService.Logging
 {
@@ -40,24 +40,32 @@ namespace AzureFileShareMonitorService.Logging
             _lock = @lock;
         }
 
-        public IDisposable BeginScope<TState>(TState state) => null;
+        public IDisposable? BeginScope<TState>(TState state) => null;
 
         public bool IsEnabled(LogLevel logLevel) => logLevel >= _options.MinimumLogLevel;
 
-        // Updated method signature to prevent unobserved exceptions
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
         {
             if (!IsEnabled(logLevel))
                 return;
 
             var message = $"{DateTime.UtcNow:u} [{logLevel}] {formatter(state, exception)}{Environment.NewLine}";
 
-            // Synchronously log the message to prevent unobserved exceptions
             _lock.Wait();
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(_options.LogFilePath));
-                File.AppendAllText(_options.LogFilePath, message);
+                var directoryPath = Path.GetDirectoryName(_options.LogFilePath);
+                if (!string.IsNullOrEmpty(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                File.AppendAllText(_options.LogFilePath, message, Encoding.UTF8);
             }
             finally
             {
@@ -68,7 +76,7 @@ namespace AzureFileShareMonitorService.Logging
 
     public class FileLoggerOptions
     {
-        public string LogFilePath { get; set; }
+        public string LogFilePath { get; set; } = string.Empty;
         public LogLevel MinimumLogLevel { get; set; } = LogLevel.Information;
     }
 }

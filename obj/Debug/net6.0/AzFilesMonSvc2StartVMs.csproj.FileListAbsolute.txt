@@ -1,0 +1,5 @@
+/home/jostelma/AzFilesMonSvc2StartVMs/obj/Debug/net6.0/AzFilesMonSvc2StartVMs.csproj.AssemblyReference.cache
+/home/jostelma/AzFilesMonSvc2StartVMs/obj/Debug/net6.0/AzFilesMonSvc2StartVMs.GeneratedMSBuildEditorConfig.editorconfig
+/home/jostelma/AzFilesMonSvc2StartVMs/obj/Debug/net6.0/AzFilesMonSvc2StartVMs.AssemblyInfoInputs.cache
+/home/jostelma/AzFilesMonSvc2StartVMs/obj/Debug/net6.0/AzFilesMonSvc2StartVMs.AssemblyInfo.cs
+/home/jostelma/AzFilesMonSvc2StartVMs/obj/Debug/net6.0/AzFilesMonSvc2StartVMs.csproj.CoreCompileInputs.cache

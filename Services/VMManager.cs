@@ -1,4 +1,5 @@
 using AzureFileShareMonitorService.Models;
+using Azure.ResourceManager;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
 using Azure.Identity;
@@ -24,16 +25,16 @@ namespace AzureFileShareMonitorService.Services
             try
             {
                 var credential = new DefaultAzureCredential();
-                var computeClient = new ComputeManagementClient(mapping.SubscriptionId, credential, new ComputeManagementClientOptions
-                {
-                    Diagnostics = { IsLoggingContentEnabled = false }
-                });
+                var armClient = new ArmClient(credential, mapping.SubscriptionId);
 
-                var vmInstanceViewResponse = await computeClient.VirtualMachines.InstanceViewAsync(mapping.ResourceGroupName, mapping.VMName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var statuses = vmInstanceViewResponse.Value.Statuses;
+                var vmId = VirtualMachineResource.CreateResourceIdentifier(
+                    mapping.SubscriptionId,
+                    mapping.ResourceGroupName,
+                    mapping.VMName);
 
-                // The power state is typically in the second status
-                var powerStateStatus = statuses.FirstOrDefault(s => s.Code.StartsWith("PowerState/"))?.Code;
+                var vmResource = armClient.GetVirtualMachineResource(vmId);
+                var instanceView = await vmResource.InstanceViewAsync(cancellationToken).ConfigureAwait(false);
+                var powerStateStatus = instanceView.Value.Statuses.FirstOrDefault(s => s.Code.StartsWith("PowerState/"))?.Code;
 
                 return powerStateStatus switch
                 {
@@ -58,9 +59,16 @@ namespace AzureFileShareMonitorService.Services
             try
             {
                 var credential = new DefaultAzureCredential();
-                var computeClient = new ComputeManagementClient(mapping.SubscriptionId, credential);
+                var armClient = new ArmClient(credential, mapping.SubscriptionId);
 
-                await computeClient.VirtualMachines.StartAsync(mapping.ResourceGroupName, mapping.VMName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var vmId = VirtualMachineResource.CreateResourceIdentifier(
+                    mapping.SubscriptionId,
+                    mapping.ResourceGroupName,
+                    mapping.VMName);
+
+                var vmResource = armClient.GetVirtualMachineResource(vmId);
+
+                await vmResource.PowerOnAsync(WaitUntil.Completed, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

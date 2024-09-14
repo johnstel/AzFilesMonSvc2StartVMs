@@ -1,0 +1,118 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/jostelma/AzFilesMonSvc2StartVMs/AzFilesMonSvc2StartVMs.csproj": {}
+  },
+  "projects": {
+    "/home/jostelma/AzFilesMonSvc2StartVMs/AzFilesMonSvc2StartVMs.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/jostelma/AzFilesMonSvc2StartVMs/AzFilesMonSvc2StartVMs.csproj",
+        "projectName": "AzFilesMonSvc2StartVMs",
+        "projectPath": "/home/jostelma/AzFilesMonSvc2StartVMs/AzFilesMonSvc2StartVMs.csproj",
+        "packagesPath": "/home/jostelma/.nuget/packages/",
+        "outputPath": "/home/jostelma/AzFilesMonSvc2StartVMs/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/jostelma/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Azure.Extensions.AspNetCore.Configuration.Secrets": {
+              "target": "Package",
+              "version": "[1.2.2, )"
+            },
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.7.0, )"
+            },
+            "Azure.ResourceManager.Compute": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Azure.Security.KeyVault.Secrets": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "Azure.Storage.Files.Shares": {
+              "target": "Package",
+              "version": "[12.11.0, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Binder": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Options": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Polly": {
+              "target": "Package",
+              "version": "[7.2.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/6.0.132/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

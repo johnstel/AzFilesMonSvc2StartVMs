@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using Azure;
 
 namespace AzureFileShareMonitorService.Services
 {
@@ -56,14 +57,15 @@ namespace AzureFileShareMonitorService.Services
         {
             var credential = new DefaultAzureCredential();
 
-            // Use the storage account's private endpoint
-            var shareUri = new Uri($"https://{_azureSettings.StorageAccountName}.file.core.windows.net/{_azureSettings.FileShareName}");
-            var shareClient = new ShareClient(shareUri, credential);
+            // Use the storage account's endpoint
+            var shareUri = new Uri($"https://{_azureSettings.StorageAccountName}.file.core.windows.net");
+            var shareServiceClient = new ShareServiceClient(shareUri, credential);
+            var shareClient = shareServiceClient.GetShareClient(_azureSettings.FileShareName);
 
             foreach (var mapping in _folderMappings)
             {
                 // Implement retry policy with Polly
-                var policy = Policy.Handle<HttpRequestException>()
+                var policy = Policy.Handle<RequestFailedException>()
                     .Or<TimeoutException>()
                     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                     {
@@ -106,7 +108,7 @@ namespace AzureFileShareMonitorService.Services
                             _logger.LogWarning($"VM {mapping.VMName} state is unknown.");
                             break;
                     }
-                });
+                }).ConfigureAwait(false);
             }
         }
     }

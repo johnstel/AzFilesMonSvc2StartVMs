@@ -6,10 +6,11 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using AzureFileShareMonitorService.Services;
 using AzureFileShareMonitorService.Logging;
 using Azure.Security.KeyVault.Secrets;
-using Azure.Core;
-using System.Collections.Generic;
 using AzureFileShareMonitorService.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System;
 
 namespace AzureFileShareMonitorService
 {

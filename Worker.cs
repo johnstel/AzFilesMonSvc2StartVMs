@@ -15,7 +15,10 @@ namespace AzureFileShareMonitorService
         private readonly IFileShareMonitorService _monitorService;
         private readonly PollingSettings _pollingSettings;
 
-        public Worker(ILogger<Worker> logger, IFileShareMonitorService monitorService, IOptions<PollingSettings> pollingOptions)
+        public Worker(
+            ILogger<Worker> logger,
+            IFileShareMonitorService monitorService,
+            IOptions<PollingSettings> pollingOptions)
         {
             _logger = logger;
             _monitorService = monitorService;
@@ -36,14 +39,14 @@ namespace AzureFileShareMonitorService
             {
                 try
                 {
-                    await _monitorService.MonitorAsync(stoppingToken);
+                    await _monitorService.MonitorAsync(stoppingToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "An error occurred during monitoring.");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(_pollingSettings.IntervalInSeconds), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(_pollingSettings.IntervalInSeconds), stoppingToken).ConfigureAwait(false);
             }
 
             _logger.LogInformation("Service is stopping.");
