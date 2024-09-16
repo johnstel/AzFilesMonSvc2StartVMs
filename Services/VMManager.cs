@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+using Azure;
 
 namespace AzureFileShareMonitorService.Services
 {

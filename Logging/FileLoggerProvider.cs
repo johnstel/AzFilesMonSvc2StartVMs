@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.IO;
-using System.Threading;
 using System;
+using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace AzureFileShareMonitorService.Logging
 {
@@ -40,7 +40,8 @@ namespace AzureFileShareMonitorService.Logging
             _lock = @lock;
         }
 
-        public IDisposable? BeginScope<TState>(TState state) => null;
+        // Updated to return a non-nullable IDisposable
+        public IDisposable BeginScope<TState>(TState state) => NoopDisposable.Instance;
 
         public bool IsEnabled(LogLevel logLevel) => logLevel >= _options.MinimumLogLevel;
 
@@ -78,5 +79,18 @@ namespace AzureFileShareMonitorService.Logging
     {
         public string LogFilePath { get; set; } = string.Empty;
         public LogLevel MinimumLogLevel { get; set; } = LogLevel.Information;
+    }
+
+    // No-operation disposable to satisfy ILogger.BeginScope contract
+    internal sealed class NoopDisposable : IDisposable
+    {
+        public static readonly NoopDisposable Instance = new NoopDisposable();
+
+        private NoopDisposable() { }
+
+        public void Dispose()
+        {
+            // No operation performed
+        }
     }
 }

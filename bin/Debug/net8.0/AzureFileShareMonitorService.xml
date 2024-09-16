@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AzureFileShareMonitorService</name>
+    </assembly>
+    <members>
+        <member name="T:AzureFileShareMonitorService.Models.VMState">
+            <summary>
+            Represents the possible states of an Azure Virtual Machine.
+            </summary>
+        </member>
+        <member name="F:AzureFileShareMonitorService.Models.VMState.Unknown">
+            <summary>
+            The VM state is unknown.
+            </summary>
+        </member>
+        <member name="F:AzureFileShareMonitorService.Models.VMState.Running">
+            <summary>
+            The VM is currently running.
+            </summary>
+        </member>
+        <member name="F:AzureFileShareMonitorService.Models.VMState.Starting">
+            <summary>
+            The VM is starting.
+            </summary>
+        </member>
+        <member name="F:AzureFileShareMonitorService.Models.VMState.Stopping">
+            <summary>
+            The VM is stopping.
+            </summary>
+        </member>
+        <member name="F:AzureFileShareMonitorService.Models.VMState.Stopped">
+            <summary>
+            The VM is stopped.
+            </summary>
+        </member>
+        <member name="F:AzureFileShareMonitorService.Models.VMState.Deallocating">
+            <summary>
+            The VM is deallocating.
+            </summary>
+        </member>
+        <member name="F:AzureFileShareMonitorService.Models.VMState.Deallocated">
+            <summary>
+            The VM is deallocated.
+            </summary>
+        </member>
+    </members>
+</doc>
