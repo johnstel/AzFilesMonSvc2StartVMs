@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AzureFileShareMonitorService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5833cd8e202f368037b6ce61dd73731a580e1c20")]
 [assembly: System.Reflection.AssemblyProductAttribute("AzureFileShareMonitorService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AzureFileShareMonitorService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
