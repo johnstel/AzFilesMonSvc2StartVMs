@@ -50,7 +50,11 @@ namespace AzureFileShareMonitorService.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to get VM state for {mapping.VMName}.");
+                _logger.LogError(ex,
+                    "Failed to get VM state for {VM} in resource group {ResourceGroup} (subscription {Subscription}).",
+                    mapping.VMName,
+                    mapping.ResourceGroupName,
+                    mapping.SubscriptionId);
                 return VMState.Unknown;
             }
         }
@@ -73,7 +77,11 @@ namespace AzureFileShareMonitorService.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to start VM {mapping.VMName}.");
+                _logger.LogError(ex,
+                    "Failed to start VM {VM} in resource group {ResourceGroup} (subscription {Subscription}).",
+                    mapping.VMName,
+                    mapping.ResourceGroupName,
+                    mapping.SubscriptionId);
                 throw;
             }
         }

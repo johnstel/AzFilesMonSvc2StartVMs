@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace AzureFileShareMonitorService
 {
@@ -40,24 +41,29 @@ namespace AzureFileShareMonitorService
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    // Bind configuration sections
-                    services.Configure<PollingSettings>(hostContext.Configuration.GetSection("PollingSettings"));
-                    services.Configure<AzureSettings>(hostContext.Configuration.GetSection("AzureSettings"));
+                    // Bind configuration sections with validation
+                    services.AddOptions<PollingSettings>()
+                        .Bind(hostContext.Configuration.GetSection("PollingSettings"))
+                        .Validate(settings => settings.IntervalInSeconds >= 30,
+                            "Polling interval must be at least 30 seconds.")
+                        .PostConfigure(settings =>
+                        {
+                            settings.IntervalInSeconds = Math.Max(settings.IntervalInSeconds, 30);
+                        });
 
-                    // Bind FolderMappings from configuration
-                    var folderMappings = new List<FolderMapping>();
-                    hostContext.Configuration.GetSection("FolderMappings").Bind(folderMappings);
-                    services.Configure<List<FolderMapping>>(options => options.AddRange(folderMappings));
+                    services.AddOptions<AzureSettings>()
+                        .Bind(hostContext.Configuration.GetSection("AzureSettings"))
+                        .Validate(settings => !string.IsNullOrWhiteSpace(settings.KeyVaultName),
+                            "Azure Key Vault name must be configured in 'AzureSettings:KeyVaultName'.");
+
+                    services.AddOptions<List<FolderMapping>>()
+                        .Bind(hostContext.Configuration.GetSection("FolderMappings"))
+                        .Validate(mappings => mappings != null && mappings.Any(),
+                            "At least one folder mapping must be configured in 'FolderMappings'.");
 
                     services.AddSingleton<IVMManager, VMManager>();
                     services.AddSingleton<IFileShareMonitorService, FileShareMonitorService>();
                     services.AddHostedService<Worker>();
-
-                    // Ensure that the configurations are valid at startup
-                    var serviceProvider = services.BuildServiceProvider();
-
-                    // Validate configurations
-                    ValidateConfigurations(serviceProvider);
                 })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
@@ -67,36 +73,5 @@ namespace AzureFileShareMonitorService
                         options.LogFilePath = hostingContext.Configuration["Logging:LogFilePath"];
                     });
                 });
-
-        private static void ValidateConfigurations(ServiceProvider serviceProvider)
-        {
-            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-
-            // Validate PollingSettings
-            var pollingSettings = serviceProvider.GetRequiredService<IOptions<PollingSettings>>().Value;
-            if (pollingSettings.IntervalInSeconds < 30)
-            {
-                logger.LogWarning("Polling interval is below 30 seconds. Setting it to 30 seconds.");
-                pollingSettings.IntervalInSeconds = 30;
-            }
-
-            // Validate AzureSettings
-            var azureSettings = serviceProvider.GetRequiredService<IOptions<AzureSettings>>().Value;
-            if (string.IsNullOrEmpty(azureSettings.KeyVaultName))
-            {
-                var message = "Azure Key Vault name must be configured in 'AzureSettings:KeyVaultName'.";
-                logger.LogCritical(message);
-                throw new InvalidOperationException(message);
-            }
-
-            // Validate FolderMappings
-            var folderMappings = serviceProvider.GetRequiredService<IOptions<List<FolderMapping>>>().Value;
-            if (folderMappings == null || !folderMappings.Any())
-            {
-                var message = "At least one folder mapping must be configured in 'FolderMappings'.";
-                logger.LogCritical(message);
-                throw new InvalidOperationException(message);
-            }
-        }
     }
 }

@@ -7,7 +7,7 @@ The Azure File Share Monitor Service is a C# .NET Core application designed to a
 ## Features
 
 - **File Share Monitoring**: Polls specified Azure File Share folders at a configurable interval (default every 5 minutes, minimum 30 seconds).
-- **VM State Management**: Automatically starts VMs if they are stopped or deallocated; logs VM states and file counts.
+- **VM State Management**: Automatically starts VMs only when their folders contain work above a configurable threshold and logs VM states with file counts.
 - **Centralized Logging**: Logs all operations to a single file compatible with CMTrace.exe, with thread-safe logging mechanisms.
 - **Security**: Uses Azure Key Vault for secure configuration management, Managed Identity for authentication, and supports Azure Private Link.
 - **Resiliency**: Implements retry policies using Polly for transient faults and uses cancellation tokens for graceful shutdowns.
@@ -40,6 +40,7 @@ The Azure File Share Monitor Service is a C# .NET Core application designed to a
      FolderMappings--0--VMName: VM1
      FolderMappings--0--ResourceGroupName: ResourceGroup1
      FolderMappings--0--SubscriptionId: your-subscription-id
+     FolderMappings--0--StartThreshold: 1
      ```
 
    - For additional folder mappings, increment the index:
@@ -49,7 +50,7 @@ The Azure File Share Monitor Service is a C# .NET Core application designed to a
      // and so on
      ```
 
-   - **Note**: Use double hyphens `--` to represent nested configuration sections and array indices.
+   - **Note**: Use double hyphens `--` to represent nested configuration sections and array indices. `StartThreshold` is optional and defaults to `1`, meaning a VM is only started when at least one file is present.
 
 2. **appsettings.json**: Update the configuration file.
 
